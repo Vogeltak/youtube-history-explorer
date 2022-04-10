@@ -24,5 +24,6 @@ class WatchHistory(object):
 
             >>> history.fetch_details(api_key='your api key')
     """
-    def __init__(self, watch_history):
+    def __init__(self, watch_history, api_key=None):
         self.events = extract_watch_events(watch_history)
+        self.api_key = api_key

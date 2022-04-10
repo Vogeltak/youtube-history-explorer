@@ -14,13 +14,34 @@ def extract_watch_events(watch_history):
         m_len = watch_history[m.start():].find('</div>')
         m_text = watch_history[m.start():m.start()+m_len]
         try:
+            # Pattern group will contain 11 characters that immediately follow "watch?v="
             video_id = re.search(r'(?<=watch\?v=).{11}', m_text).group()
-            datetime_str = re.search(r'(... \d{1,2}, \d{4}, \d:\d\d:\d\d .. [A-Z]+)', m_text).group()
         except:
-            print('Failed to find video_id or datetime in:')
+            print('Failed to find video_id in:')
             print(m_text)
+            continue
+        try:
+            # Of the form: Apr 7, 2022, 5:18:48 PM CEST (for English language exports)
+            datetime_str = re.search(r'(... \d{1,2}, \d{4}, \d{1,2}:\d\d:\d\d .. [A-Z]+)', m_text).group()
+        except:
+            print('Failed to find datetime string in:')
+            print(m_text)
+            datetime_str = ''
 
-    return []
+        # Attempt to parse datetime string
+        # For now, the only format to attempt is
+        # '%b %d, %Y, %I:%M:%S %p %Z'
+        formats = ['%b %d, %Y, %I:%M:%S %p %Z']
+
+        try:
+            datetime_stamp = datetime.datetime.strptime(datetime_str, formats[0])
+        except ValueError:
+            print(f'Failed to parse "{datetime_str}" according to {formats[0]}')
+            datetime_stamp = None
+
+        events.append(WatchEvent(video_id, datetime_stamp))
+
+    return events
 
 
 def parse_iso_duration(iso_duration):
