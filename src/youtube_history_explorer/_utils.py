@@ -1,7 +1,7 @@
 import re
 import datetime
 
-from .models import WatchEvent
+from ._models import WatchEvent
 
 
 def extract_watch_events(watch_history):

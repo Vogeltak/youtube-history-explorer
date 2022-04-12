@@ -1,6 +1,6 @@
-from .models import WatchEvent
-from .utils import extract_watch_events
-from .youtube import YouTube
+from ._models import WatchEvent
+from ._utils import extract_watch_events
+from ._youtube import YouTube
 
 
 class WatchHistory(object):
