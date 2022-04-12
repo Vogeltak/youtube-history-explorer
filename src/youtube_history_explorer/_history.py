@@ -3,7 +3,7 @@ from ._utils import extract_watch_events
 from ._youtube import YouTube
 
 
-class WatchHistory(object):
+class WatchHistory:
     """
     Manage your personal YouTube watch history.
 
@@ -27,3 +27,13 @@ class WatchHistory(object):
     def __init__(self, watch_history, api_key=None):
         self.events = extract_watch_events(watch_history)
         self.api_key = api_key
+
+    def __len__(self):
+        return len(self.events)
+
+    def fetch_details(api_key=None):
+        """
+        Retrieve content details for all WatchEvents.
+
+        Details will be stored in the WatchEvent instances themselves.
+        """

@@ -1,6 +1,6 @@
 import requests
 
-class YouTube(object):
+class YouTube:
     """
     Fetch video data from YouTube Data API.
     """
