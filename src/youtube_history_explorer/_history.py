@@ -1,5 +1,7 @@
+import pandas as pd
+
 from ._models import WatchEvent
-from ._utils import extract_watch_events
+from ._utils import extract_watch_events, parse_iso_duration
 from ._youtube import YouTube
 
 
@@ -24,16 +26,22 @@ class WatchHistory:
 
             >>> history.fetch_details(api_key='your api key')
     """
-    def __init__(self, watch_history, api_key=None):
+    def __init__(self, watch_history):
         self.events = extract_watch_events(watch_history)
-        self.api_key = api_key
+        self.youtube = YouTube()
 
     def __len__(self):
         return len(self.events)
 
-    def fetch_details(api_key=None):
+    def fetch_details(self, api_key):
         """
         Retrieve content details for all WatchEvents.
 
         Details will be stored in the WatchEvent instances themselves.
         """
+        self.youtube.fetch(self.events, api_key)
+
+    def get_watchtime_per_period(self, period='D'):
+        df = pd.DataFrame([[e.timestamp, parse_iso_duration(e.content_details.duration)] for e in self.events if e.content_details], columns=['timestamp', 'watchtime']).set_index('timestamp')
+        g = df.groupby(pd.Grouper(freq=period))
+        return g.sum()
