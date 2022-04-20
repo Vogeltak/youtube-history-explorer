@@ -1,3 +1,4 @@
+import sys
 import re
 import datetime
 
@@ -17,15 +18,15 @@ def extract_watch_events(watch_history):
             # Pattern group will contain 11 characters that immediately follow "watch?v="
             video_id = re.search(r'(?<=watch\?v=).{11}', m_text).group()
         except:
-            print('Failed to find video_id in:')
-            print(m_text)
+            log('Failed to find video_id in:', err=True)
+            log(m_text, err=True)
             continue
         try:
             # Of the form: Apr 7, 2022, 5:18:48 PM CEST (for English language exports)
             datetime_str = re.search(r'(... \d{1,2}, \d{4}, \d{1,2}:\d\d:\d\d .. [A-Z]+)', m_text).group()
         except:
-            print('Failed to find datetime string in:')
-            print(m_text)
+            log('Failed to find datetime string in:', err=True)
+            log(m_tex, err=Truet)
             datetime_str = ''
 
         # Attempt to parse datetime string
@@ -36,7 +37,7 @@ def extract_watch_events(watch_history):
         try:
             datetime_stamp = datetime.datetime.strptime(datetime_str, formats[0])
         except ValueError:
-            print(f'Failed to parse "{datetime_str}" according to {formats[0]}')
+            log(f'Failed to parse "{datetime_str}" according to {formats[0]}', err=True)
             datetime_stamp = None
 
         events.append(WatchEvent(video_id, datetime_stamp))
@@ -60,3 +61,14 @@ def parse_iso_duration(iso_duration):
     d = [int(n) if n else 0 for n in m.groups()]
 
     return datetime.timedelta(days=d[0], hours=d[1], minutes=d[2], seconds=d[3])
+
+
+def log(message, err=False):
+    time_format = '%H:%M:%S:%f'
+    now = datetime.datetime.now().strftime(time_format)
+
+    stream = sys.stdout
+    if err:
+        stream = sys.stderr
+
+    print(f'{now} {message}', file=stream)

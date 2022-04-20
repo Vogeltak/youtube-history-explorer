@@ -1,5 +1,6 @@
 import requests
 from ._models import VideoContentDetails, VideoSnippet, VideoStatistics
+from ._utils import log
 
 class YouTube:
     """
@@ -20,7 +21,7 @@ class YouTube:
         appropriate data classes in the models module.
         """
         if not api_key and not self.api_key:
-            print('Error: could not find an API key')
+            log('Error: could not find an API key', err=True)
             return
 
         if api_key:
